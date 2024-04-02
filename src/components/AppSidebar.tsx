@@ -54,7 +54,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       )}
     >
       <div className="flex flex-col justify-between h-full ">
-        <Link to={"/"} className="bg-[#181c2e] text-lg text-[#f0f0f0] w-full h-10 px-3 py-2 flex gap-1">
+        <Link to={"/home"} className="bg-[#181c2e] text-lg text-[#f0f0f0] w-full h-10 px-3 py-2 flex gap-1">
           <Hash className="w-5 h-full flex justify-center items-center" />
           {!mobileView && <p className="text-lg">Railfy</p>}
         </Link>
