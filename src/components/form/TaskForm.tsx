@@ -20,6 +20,14 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
 import { toast } from "../ui/use-toast";
+import {
+  useCreateTaskMutation,
+  useUpdateTaskByIdMutation,
+} from "@/redux/api/taskSlice";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { useParams } from "react-router-dom";
 
 const profileFormSchema = z.object({
   title: z
@@ -34,11 +42,6 @@ const profileFormSchema = z.object({
   maintainceDate: z.date({
     required_error: "A maintenance date is required.",
   }),
-  dueDate: z
-    .date({
-      required_error: "A due date is required.",
-    })
-    .optional(),
   days: z
     .number()
     .min(1, { message: "Days must be at least 1" })
@@ -50,13 +53,18 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 // This can come from your database or API.
 
 const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
-  console.log(mode, "mode");
+  const { data: taskData } = useSelector((state: RootState) => state.task);
+  const [createTaskApi, {}] = useCreateTaskMutation();
+
+  const [updateTaskApi, {}] = useUpdateTaskByIdMutation();
+
+  const { id } = useParams();
+
   const defaultValues: Partial<ProfileFormValues> = {
-    title: mode !== "edit" ? "" : "I own a computer.",
-    description: mode !== "edit" ? "" : "I own a computer.",
+    title: mode !== "edit" ? "" : undefined,
+    description: mode !== "edit" ? undefined : "",
     maintainceDate: mode !== "edit" ? undefined : undefined,
-    dueDate: mode !== "edit" ? undefined : undefined,
-    days: mode !== "edit" ? undefined : 30,
+    days: mode !== "edit" ? undefined : 0,
   };
 
   const form = useForm<ProfileFormValues>({
@@ -65,15 +73,57 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
     mode: "onChange",
   });
 
-  function onSubmit(data: ProfileFormValues) {
-    // if (mode === "edit") {
-    //   // update task api call
-    //   console.log(data,"edit");
-    // } else if (mode === "new") {
-    //   // create new Task api call
-    //   console.log(data,"new");
+  useEffect(() => {
+    if (mode === "edit") {
+      const editFormData = taskData
+        .filter((task: any) => {
+          return task._id === id;
+        })
+        .map((task: any) => {
+          return {
+            title: task.title,
+            description: task.description,
+            maintainceDate: task.maintainceDate,
+            days: task.days,
+          };
+        });
 
-    // }
+      for (let i = 0; i < editFormData.length; i++) {
+        Object.entries(editFormData[i]).forEach(([key, value]) => {
+          if (
+            key === "title" ||
+            key === "description" ||
+            key === "maintainceDate" ||
+            key === "days"
+          ) {
+            form.setValue(key, value as string | number | Date | undefined);
+          }
+        });
+      }
+    }
+  }, [mode, taskData]);
+
+  function onSubmit(data: ProfileFormValues) {
+    if (mode === "edit") {
+      // update task api call
+      const formData = {
+        ...data,
+        _id: id,
+        description: data.description ? data.description : undefined,
+      };
+
+      if (formData && formData._id) {
+        updateTaskApi(formData);
+      }
+    } else if (mode === "new") {
+      // create new Task api call
+      const formData = {
+        ...data,
+        description: data.description ? data.description : undefined,
+      };
+
+      createTaskApi(formData);
+    }
 
     toast({
       title: "You submitted the following values:",
@@ -90,7 +140,6 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
         title: "",
         description: "",
         days: 0,
-        dueDate: undefined,
         maintainceDate: undefined,
       });
     }
@@ -107,7 +156,7 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
             control={form.control}
             name="title"
             render={({ field }) => (
-              <FormItem className="lg:w-[32%] w-full">
+              <FormItem className="lg:w-1/2 w-full">
                 <FormLabel>
                   Title <span className="text-destructive">*</span>
                 </FormLabel>
@@ -123,7 +172,7 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
             control={form.control}
             name="days"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="lg:w-1/2 w-full">
                 <FormLabel>
                   Days <span className="text-destructive">*</span>
                 </FormLabel>
@@ -153,7 +202,7 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
             control={form.control}
             name="maintainceDate"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
+              <FormItem className="flex flex-col lg:w-1/2 w-full">
                 <FormLabel>
                   Maintaince Date <span className="text-destructive">*</span>
                 </FormLabel>
@@ -163,7 +212,7 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
+                          "w-full pl-3 text-left font-normal",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -176,7 +225,7 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0" align="end">
                     <Calendar
                       mode="single"
                       selected={field.value}
@@ -189,50 +238,6 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
                     />
                   </PopoverContent>
                 </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dueDate"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Due Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      // disabled={(date) =>
-                      //   date < new Date() || date < new Date("1900-01-01")
-                      // }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormDescription>
-                  A Task will be done due on {field.value?.toString()}
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -250,6 +255,7 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
                 <Textarea
                   placeholder="Take note of what you are doing"
                   className="resize-none"
+                  rows={8}
                   {...field}
                 />
               </FormControl>

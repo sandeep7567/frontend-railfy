@@ -15,9 +15,7 @@ export const apiSlice = createApi({
         async onQueryStarted(_, { dispatch, queryFulfilled }) {
           try {
             const { data } = await queryFulfilled;
-            if (data) {
-              dispatch(taskAdd(data));
-            }
+            data && data?.statusCode === 200 && dispatch(taskAdd(data?.data));
           } catch (error) {
             console.error(error);
           }

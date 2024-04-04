@@ -10,9 +10,8 @@ type TaskResponese = {
 type TaskData = {
   _id?: string;
   title: string;
-  description: string;
-  maintainceDate: string;
-  dueDate: string;
+  description: string | undefined;
+  maintainceDate: Date;
   days: number;
 };
 

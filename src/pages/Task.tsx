@@ -6,7 +6,6 @@ const Task = () => {
   const { id } = useParams();
   const location = useLocation();
   const edit = location.pathname.includes("edit") ? "edit" : undefined;
-  console.log(edit);
 
   if (id === undefined && !location.pathname.includes("edit")) {
     return <Navigate to="/home" />;

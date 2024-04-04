@@ -5,7 +5,7 @@ export interface TaskState {
 }
 
 const initialState: TaskState = {
-  data: null,
+  data: [],
 };
 
 export const taskSlice = createSlice({
