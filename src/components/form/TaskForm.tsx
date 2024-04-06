@@ -17,17 +17,15 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
-import { toast } from "../ui/use-toast";
 import {
   useCreateTaskMutation,
   useUpdateTaskByIdMutation,
 } from "@/redux/api/taskSlice";
+import { CalendarIcon, ChevronLeft } from "lucide-react";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
+import { toast } from "../ui/use-toast";
 
 const profileFormSchema = z.object({
   title: z
@@ -52,13 +50,20 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 // This can come from your database or API.
 
-const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
-  const { data: taskData } = useSelector((state: RootState) => state.task);
+const TaskForm = ({
+  mode,
+  task = [],
+}: {
+  mode: "new" | "edit" | undefined;
+  task?: any[];
+}) => {
   const [createTaskApi, {}] = useCreateTaskMutation();
 
   const [updateTaskApi, {}] = useUpdateTaskByIdMutation();
 
   const { id } = useParams();
+
+  const navigate = useNavigate();
 
   const defaultValues: Partial<ProfileFormValues> = {
     title: mode !== "edit" ? "" : undefined,
@@ -74,37 +79,43 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
   });
 
   useEffect(() => {
-    if (mode === "edit") {
-      const editFormData = taskData
-        .filter((task: any) => {
-          return task._id === id;
-        })
-        .map((task: any) => {
-          return {
-            title: task.title,
-            description: task.description,
-            maintainceDate: task.maintainceDate,
-            days: task.days,
-          };
-        });
+    if (mode === "edit" && task && task.length > 0) {
+      const editFormData =
+        task?.length > 0 &&
+        task
+          .filter((taskData: any) => {
+            return taskData._id === id;
+          })
+          .map((taskData: any) => {
+            return {
+              title: taskData.title,
+              description: taskData.description,
+              maintainceDate: taskData.maintainceDate,
+              days: taskData.days,
+            };
+          });
 
-      for (let i = 0; i < editFormData.length; i++) {
-        Object.entries(editFormData[i]).forEach(([key, value]) => {
-          if (
-            key === "title" ||
-            key === "description" ||
-            key === "maintainceDate" ||
-            key === "days"
-          ) {
-            form.setValue(key, value as string | number | Date | undefined);
-          }
-        });
+      if (editFormData && editFormData.length > 0) {
+        for (let i = 0; i < editFormData.length; i++) {
+          Object.entries(editFormData[i]).forEach(([key, value]) => {
+            if (
+              key === "title" ||
+              key === "description" ||
+              key === "maintainceDate" ||
+              key === "days"
+            ) {
+              form.setValue(key, value as string | number | Date | undefined);
+            }
+          });
+        }
+      } else {
+        navigate("/task");
       }
     }
-  }, [mode, taskData]);
+  }, [mode, task]);
 
   function onSubmit(data: ProfileFormValues) {
-    if (mode === "edit") {
+    if (mode === "edit" && task && task.length > 0) {
       // update task api call
       const formData = {
         ...data,
@@ -114,8 +125,9 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
 
       if (formData && formData._id) {
         updateTaskApi(formData);
+        toast({ title: "updated successfully" });
       }
-    } else if (mode === "new") {
+    } else if (mode === "new" && task.length === 0) {
       // create new Task api call
       const formData = {
         ...data,
@@ -123,16 +135,8 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
       };
 
       createTaskApi(formData);
+      toast({ title: "created successfully" });
     }
-
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
 
     // reset the form
     if (mode !== "edit") {
@@ -263,7 +267,25 @@ const TaskForm = ({ mode }: { mode: "new" | "edit" | undefined }) => {
             </FormItem>
           )}
         />
-        <Button type="submit">{mode !== "edit" ? "Create" : "Update"}</Button>
+        <div className="flex gap-2">
+          <Button
+            className="bg-blue-500 hover:bg-blue-500/90 text-white hover:text-white/90 w-full lg:w-fit"
+            type="submit"
+          >
+            {mode !== "edit" ? "Create" : "Update"}
+          </Button>
+          <Button
+            size={"default"}
+            variant={"ghost"}
+            className="hover:bg-muted-foreground/10 hover:text-accent-foreground/90 w-full lg:w-fit"
+            asChild
+          >
+            <Link to={"/task"}>
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Back
+            </Link>
+          </Button>
+        </div>
       </form>
     </Form>
   );

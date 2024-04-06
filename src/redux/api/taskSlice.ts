@@ -1,5 +1,6 @@
 import { Task } from "@/constant/reduxApi";
 import { apiSlice } from "./apiSlice";
+import { taskRemove } from "../slice/taskSlice";
 
 type TaskResponese = {
   message: string;
@@ -71,7 +72,37 @@ export const taskApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["Task"],
     }),
+    deleteAllTask: builder.mutation<TaskResponese, void>({
+      query: () => ({
+        url: `/${Task}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data) {
+            dispatch(taskRemove());
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      invalidatesTags: ["Task"],
+    }),
+    deleteTaskById: builder.mutation<TaskResponese, string>({
+      query: (id: string) => ({
+        url: `/${Task}/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Task"],
+    }),
   }),
 });
 
-export const { useCreateTaskMutation, useUpdateTaskByIdMutation, useGetTaskByIdQuery } = taskApi;
+export const {
+  useCreateTaskMutation,
+  useUpdateTaskByIdMutation,
+  useGetTaskByIdQuery,
+  useDeleteAllTaskMutation,
+  useDeleteTaskByIdMutation
+} = taskApi;

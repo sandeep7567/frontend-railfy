@@ -1,23 +1,28 @@
-import { PropsWithChildren } from "react";
 import { Card, CardHeader, CardTitle } from "../ui/Card";
 import TaskForm from "./TaskForm";
 
-const TaskFormTemplate = ({ mode }: { mode: "new" | "edit" | undefined }) => {
+const TaskFormTemplate = ({
+  mode,
+  task,
+}: {
+  mode: "new" | "edit" | undefined;
+  task?: any;
+}) => {
   if (mode === "new") {
     return (
-      <TaskController>
-        <TaskForm mode={mode} />
+      <TaskController title="Create New Task">
+        <TaskForm mode={mode} task={task} />
       </TaskController>
     );
   } else if (mode === "edit") {
     return (
-      <TaskController>
-        <TaskForm mode={mode} />
+      <TaskController title="Edit Task">
+        <TaskForm mode={mode} task={task} />
       </TaskController>
     );
   } else {
     return (
-      <TaskController>
+      <TaskController title="View Task">
         <h1>View Task Details</h1>
       </TaskController>
     );
@@ -26,12 +31,18 @@ const TaskFormTemplate = ({ mode }: { mode: "new" | "edit" | undefined }) => {
 
 export default TaskFormTemplate;
 
-export const TaskController = ({ children }: PropsWithChildren) => {
+export const TaskController = ({
+  children,
+  title = "Create New Task",
+}: {
+  children: React.ReactNode;
+  title?: string;
+}) => {
   return (
-    <Card className="w-full mx-auto mt-10 pb-10 bg-[#f5f5f5] flex flex-col justify-center items-center">
+    <Card className="w-[80%] ml-[4.5rem] md:ml-28 xl:ml-56 mt-12 pb-10 bg-card flex flex-col justify-center items-center">
       <CardHeader className="flex flex-col gap-5">
-        <CardTitle className="text-4xl text-purple-700">
-          No Task Found
+        <CardTitle className="text-4xl font-semibold text-indigo-600">
+          {title}
         </CardTitle>
       </CardHeader>
       {/* Form Component to create new task */}

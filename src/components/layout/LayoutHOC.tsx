@@ -8,7 +8,7 @@ const LayoutHOC = (ChildComponent: React.ComponentType) => {
     
     return (
       <>
-        <main className="flex" >
+        <main className="relative flex" >
           {/* Sidebar */}
           <AppSidebar mobileView={mobileNavView} setMobileView={setMobileNavView} />
 

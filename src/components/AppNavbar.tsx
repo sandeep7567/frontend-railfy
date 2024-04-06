@@ -8,9 +8,10 @@ const AppNavbar: React.FC<AppSidebarProps> = ({ mobileView }) => {
     <nav
       className={cn(
         "fixed h-10 inset-0 max-w-full",
+        // mobileView ? "w-52 2xl:w-12 transition-all duration-500" : "w-12 2xl:w-52 transition-all duration-500"
         mobileView
-          ? "left-12 transition-all duration-300"
-          : "left-52  transition-all duration-300"
+          ? "left-52 2xl:left-12 transition-all duration-300"
+          : "left-12 2xl:left-52  transition-all duration-300"
       )}
     >
       <div className="bg-gray-100 border-b border-gray-200">

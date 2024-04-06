@@ -7,10 +7,11 @@ export const apiSlice = createApi({
   tagTypes: ["Task"],
   endpoints: (builder) => ({
       getTask: builder.query({
-        query: () => ({
+        query: (params) => ({
           url: `/${Task}`,
           method: "GET",
           credentials: "include" as const,
+          params,
         }),
         async onQueryStarted(_, { dispatch, queryFulfilled }) {
           try {
