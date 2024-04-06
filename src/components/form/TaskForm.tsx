@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { cn } from "@/lib/utils";
+import { cn, formattedDate } from "@/lib/utils";
 import {
   useCreateTaskMutation,
   useUpdateTaskByIdMutation,
@@ -57,16 +57,18 @@ const TaskForm = ({
   mode: "new" | "edit" | undefined;
   task?: any[];
 }) => {
-  const [createTaskApi, {}] = useCreateTaskMutation();
+  const [createTaskApi, { isSuccess: createTaskApiIsSuccess }] =
+    useCreateTaskMutation();
 
-  const [updateTaskApi, {}] = useUpdateTaskByIdMutation();
+  const [updateTaskApi, { isSuccess: updateTaskApiIsSuccess, data }] =
+    useUpdateTaskByIdMutation();
 
   const { id } = useParams();
 
   const navigate = useNavigate();
 
   const defaultValues: Partial<ProfileFormValues> = {
-    title: mode !== "edit" ? "" : undefined,
+    title: mode !== "edit" ? "" : "",
     description: mode !== "edit" ? undefined : "",
     maintainceDate: mode !== "edit" ? undefined : undefined,
     days: mode !== "edit" ? undefined : 0,
@@ -78,6 +80,14 @@ const TaskForm = ({
     mode: "onChange",
   });
 
+  // if task created or updated successfully, then naviagte to "/task";
+  useEffect(() => {
+    if (createTaskApiIsSuccess || updateTaskApiIsSuccess) {
+      navigate("/task");
+    }
+  }, [createTaskApiIsSuccess, updateTaskApiIsSuccess, data]);
+
+  // sett default value for edit task form in edit mode
   useEffect(() => {
     if (mode === "edit" && task && task.length > 0) {
       const editFormData =
@@ -90,7 +100,7 @@ const TaskForm = ({
             return {
               title: taskData.title,
               description: taskData.description,
-              maintainceDate: taskData.maintainceDate,
+              maintainceDate: formattedDate(taskData.maintainceDate),
               days: taskData.days,
             };
           });
@@ -187,9 +197,9 @@ const TaskForm = ({
                     {...field}
                     onChange={(e) => {
                       const value = parseInt(e.target.value);
-                      field.onChange(value);
+                      field.onChange(isNaN(value) ? undefined : value); // Ensure value is a number or undefined
                     }}
-                    value={field.value}
+                    value={field?.value ? field.value : ""}
                   />
                 </FormControl>
                 <FormDescription>

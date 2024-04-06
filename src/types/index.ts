@@ -8,7 +8,7 @@ export interface NavDataType {
 export interface AppSidebarProps {
   setMobileView?: React.Dispatch<React.SetStateAction<boolean>>;
   mobileView?: boolean;
-}
+};
 
 export interface TaskFormType {
   _id?: string;
@@ -17,7 +17,7 @@ export interface TaskFormType {
   days: number;
   dueDate: string | undefined;
   maintainceDate: string;
-}
+};
 
 export interface DeleteModalProps {
   type: "deleteTask" | "deleteHistory" | "deleteTaskById" | "deleteHistoryById";
@@ -25,4 +25,4 @@ export interface DeleteModalProps {
   title: string;
   isOpen: boolean;
   onClose: () => void;
-}
+};
