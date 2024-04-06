@@ -1,26 +1,47 @@
-import { useDeleteTaskByIdMutation } from "@/redux/api/taskSlice";
-import { Button } from "../ui/Button";
+import {
+  useDeleteAllTaskMutation,
+  useDeleteTaskByIdMutation,
+} from "@/redux/api/taskSlice";
+import { Button } from "@/components/ui/Button";
+import { DeleteModalProps } from "@/types";
 
-export const DeleteTaskById = ({
-  deleteId,
-  setDeleteId,
+export const DeleteTaskByIdMoadl = ({
+  deleteId = null,
   title,
-}: {
-  deleteId: string | null;
-  setDeleteId: (id: string | null) => void;
-  title: string;
-}) => {
+  type,
+  isOpen,
+  onClose
+}: DeleteModalProps) => {
   const [deleteTaskByIdApi, {}] = useDeleteTaskByIdMutation();
+  const [deleteAllTaskApi] = useDeleteAllTaskMutation();
 
   const handleDeleteById = async () => {
-    if (deleteId) await deleteTaskByIdApi(deleteId);
+    switch (type) {
+      case "deleteTask":
+        await deleteAllTaskApi();
+        break;
+      case "deleteHistory":
+        console.log("deleteAllHistoryApi()");
+        break;
+      case "deleteTaskById":
+        deleteId && await deleteTaskByIdApi(deleteId);
+      break;
+      case "deleteHistoryById":
+        deleteId && console.log("deleteHistoryById()");
+      break;
+    
+      default:
+        break;
+    }
+
+    onClose();
   };
 
   const handleCancel = () => {
-    deleteId && setDeleteId(null);
+    onClose();
   };
 
-  if (deleteId) {
+  if (isOpen) {
     return (
       <div
         id="popup-modal"
@@ -70,7 +91,7 @@ export const DeleteTaskById = ({
                   />
                 </svg>
                 <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                  Are you sure you want to delete this Task: {title}?
+                  {title}?
                 </h3>
                 <Button
                   data-modal-hide="popup-modal"

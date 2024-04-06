@@ -18,3 +18,11 @@ export interface TaskFormType {
   dueDate: string | undefined;
   maintainceDate: string;
 }
+
+export interface DeleteModalProps {
+  type: "deleteTask" | "deleteHistory" | "deleteTaskById" | "deleteHistoryById";
+  deleteId?: string | null;
+  title: string;
+  isOpen: boolean;
+  onClose: () => void;
+}

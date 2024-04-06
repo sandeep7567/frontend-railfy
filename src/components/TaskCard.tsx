@@ -21,7 +21,8 @@ import { TaskFormType } from "@/types";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Separator } from "./ui/Separator";
-import { DeleteTaskById } from "./function/DeleteTaskById";
+
+import { DeleteTaskByIdMoadl } from "./ui/modal/DeleteTaskById";
 
 export const TaskCard: React.FC<TaskFormType> = ({
   _id,
@@ -41,10 +42,12 @@ export const TaskCard: React.FC<TaskFormType> = ({
     <Card>
       {/* show delete dialog here; */}
       {deleteId && (
-        <DeleteTaskById
-          title={title}
+        <DeleteTaskByIdMoadl
+          title={`Are you sure you want to delete this Task: ${title}`}
           deleteId={deleteId}
-          setDeleteId={setDeleteId}
+          type="deleteTaskById"
+          isOpen={deleteId !== null}
+          onClose={() => setDeleteId(null)}
         />
       )}
       <CardHeader className="flex flex-row justify-between items-center gap-4 space-y-0">

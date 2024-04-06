@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useGetTaskQuery } from "@/redux/api/apiSlice";
-import { useDeleteAllTaskMutation } from "@/redux/api/taskSlice";
 
 import { TaskCard } from "@/components/TaskCard";
 import { Button } from "@/components/ui/Button";
@@ -11,6 +10,7 @@ import Loader from "@/components/ui/Loader";
 import { TaskFormType } from "@/types";
 import { ChevronLeft, ChevronRight, PlusCircleIcon, X } from "lucide-react";
 import moment from "moment";
+import { DeleteTaskByIdMoadl } from "@/components/ui/modal/DeleteTaskById";
 
 interface PageInfoProps {
   totalDoc: number;
@@ -26,8 +26,6 @@ interface TaskListingProps {
 export const TaskListing = ({ task, pageInfo }: TaskListingProps) => {
   const navigate = useNavigate();
 
-  const [deleteAllApi] = useDeleteAllTaskMutation();
-
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 6,
@@ -35,6 +33,11 @@ export const TaskListing = ({ task, pageInfo }: TaskListingProps) => {
 
   // sorting with nearest to far dueDate;
   const [sort, setSort] = useState({ field: "dueDate", order: "asc" });
+
+  // const [deleteAllTask, setDeleteAllTask] = useState<
+  //   "deleteAllTask" | string | null
+  // >(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const { isFetching, isLoading, data } = useGetTaskQuery(
     {
@@ -77,7 +80,7 @@ export const TaskListing = ({ task, pageInfo }: TaskListingProps) => {
   // page 5 - 6
 
   const handleDeleteDB = async () => {
-    await deleteAllApi();
+    setIsOpen(true);
   };
 
   const handleNextPage = () => {
@@ -97,6 +100,15 @@ export const TaskListing = ({ task, pageInfo }: TaskListingProps) => {
 
   return (
     <div className="w-10/12 mx-auto ml-16 lg:ml-24 xl:ml-24 2xl:ml-56 mt-8 md:mt-16">
+      {/* Show clear all task Modal */}
+      {isOpen && (
+        <DeleteTaskByIdMoadl
+          title={"Are you sure you want to delete All Task Listing?"}
+          type="deleteTask"
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
       {/* if data is not empty */}
       {taskInfo && taskInfo.length > 0 && (
         <div className="flex flex-col-reverse md:flex-col">
@@ -115,7 +127,7 @@ export const TaskListing = ({ task, pageInfo }: TaskListingProps) => {
             </Button>
           </Card>
           {/* TODO Task Listing */}
-          <div className="flex flex-col">
+          <div className="flex flex-col justify-between min-h-[35rem] h-full">
             <div className="w-[100%] md:w-3/4 lg:w-10/12 xl:w-full pr-2 md:p-0 ml-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-2 gap-4 my-10">
               {taskInfo.map((task: TaskFormType) => (
                 <TaskCard key={task._id} {...task} />
