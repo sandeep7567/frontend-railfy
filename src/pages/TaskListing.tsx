@@ -10,7 +10,7 @@ import Loader from "@/components/ui/Loader";
 import { TaskFormType } from "@/types";
 import { ChevronLeft, ChevronRight, PlusCircleIcon, X } from "lucide-react";
 import moment from "moment";
-import { DeleteTaskByIdMoadl } from "@/components/ui/modal/DeleteTaskById";
+import { DeleteTaskByIdMoadl } from "@/components/ui/modal/DeleteModal";
 
 interface PageInfoProps {
   totalDoc: number;

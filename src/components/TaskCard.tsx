@@ -22,7 +22,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Separator } from "./ui/Separator";
 
-import { DeleteTaskByIdMoadl } from "./ui/modal/DeleteTaskById";
+import { DeleteTaskByIdMoadl } from "./ui/modal/DeleteModal";
 
 export const TaskCard: React.FC<TaskFormType> = ({
   _id,
