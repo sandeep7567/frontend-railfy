@@ -1,20 +1,25 @@
-import React, { useState } from "react";
 import AppNavbar from "../AppNavbar";
 import AppSidebar from "../AppSidebar";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 const LayoutHOC = (ChildComponent: React.ComponentType) => {
   const LayoutWrapper = (props: any) => {
-    const [mobileNavView, setMobileNavView] = useState(false);
-    
+
+    // use useWindowSize hook;
+    const { mobileNavView, setMobileNavView } = useWindowSize();
+
     return (
       <>
-        <main className="relative flex" >
+        <main className="relative flex">
           {/* Sidebar */}
-          <AppSidebar mobileView={mobileNavView} setMobileView={setMobileNavView} />
+          <AppSidebar
+            mobileView={mobileNavView}
+            setMobileView={setMobileNavView}
+          />
 
           <div className="grow">
             {/* AppBar */}
-            <AppNavbar mobileView={mobileNavView}  />
+            <AppNavbar mobileView={mobileNavView} />
 
             {/* Main Dashboard Area */}
             <ChildComponent {...props} />
