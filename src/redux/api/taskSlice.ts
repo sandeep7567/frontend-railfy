@@ -25,16 +25,6 @@ export const taskApi = apiSlice.injectEndpoints({
         body: data,
         credentials: "include" as const,
       }),
-      // async onQueryStarted(_, { dispatch, queryFulfilled }) {
-      //   try {
-      //     const { data } = await queryFulfilled;
-      //     if (data) {
-      //       dispatch(taskAdd(data));
-      //     }
-      //   } catch (err) {
-      //     console.log(err);
-      //   }
-      // },
       invalidatesTags: ["Task"],
     }),
     updateTaskById: builder.mutation<TaskResponese, TaskData>({
@@ -46,24 +36,6 @@ export const taskApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Task"],
     }),
-    // getTask: builder.query<TaskResponese, void>({
-    //   query: () => ({
-    //     url: `/${Task}`,
-    //     method: "GET",
-    //     credentials: "include" as const,
-    //   }),
-    //   async onQueryStarted(_, { dispatch, queryFulfilled }) {
-    //     try {
-    //       const { data } = await queryFulfilled;
-    //       if (data) {
-    //         dispatch(taskAdd(data));
-    //       }
-    //     } catch (error) {
-    //       console.error(error);
-    //     }
-    //   },
-    //   providesTags: ["Task"],
-    // }),
     getTaskById: builder.query<TaskResponese, void>({
       query: (id) => ({
         url: `/${Task}/${id}`,

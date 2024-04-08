@@ -9,25 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import { TaskFormType } from "@/types";
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { TaskData } from "@/types";
 
-export const DetailTaskCard: React.FC<TaskFormType> = ({
-  _id,
-  title,
-  description,
-  maintainceDate,
-  dueDate,
-  days,
+interface TaskDetailTaskCardProps {
+  task: TaskData;
+}
+
+export const DetailTaskCard: React.FC<TaskDetailTaskCardProps> = ({
+  task: { _id, description, days, dueDate, maintainceDate, title },
 }) => {
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (typeof _id === "undefined") {
-      navigate("/task");
-    }
-  }, []);
-
   return (
     <Card className="bg-secondary/80 justify-center items-center ">
       <CardHeader className="flex flex-row justify-between space-y-0 items-center">
@@ -59,14 +50,16 @@ export const DetailTaskCard: React.FC<TaskFormType> = ({
       <CardFooter className="flex flex-col lg:flex-row items-start justify-between lg:items-center flex-wrap gap-4 w-full border-t p-6">
         <div className="text-xs lg:text-sm text-muted-foreground">
           <span className="text-accent-foreground">Maintaince Date: </span>
-          {maintainceDate}
+          {maintainceDate && maintainceDate.toString()}
         </div>
         <div className="text-xs lg:text-sm text-muted-foreground">
           <span className="text-accent-foreground">Expire In: </span> {days}{" "}
           days
         </div>
         <div className="text-xs lg:text-sm text-muted-foreground">
-          <span className="text-accent-foreground">Due Date: </span> {dueDate}
+          <span className="text-accent-foreground">
+            Due Date: {dueDate && dueDate.toString()}
+          </span>
         </div>
         <Button
           size={"default"}

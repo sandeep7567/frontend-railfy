@@ -1,7 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export interface TaskInfoType {
+  days: number;
+  description?: string;
+  dueDate: Date;
+  maintainceDate: Date;
+  title: string;
+  createdAt: Date;
+  updatedAt: Date;
+  __v: number;
+  _id: string;
+}
+
 export interface TaskState {
-  data: any;
+  data: TaskInfoType[];
   pageInfo: {
     totalDoc: number;
     totalPages: number;
@@ -24,9 +36,7 @@ export const taskSlice = createSlice({
   reducers: {
     taskAdd: (state, { payload }: PayloadAction<any>) => {
       state.data = payload.taskInfo;
-      state.pageInfo.totalDoc = payload.totalDoc;
-      state.pageInfo.totalPages = payload.totalPages;
-      state.pageInfo.currentPage = payload.currentPage;
+      state.pageInfo = payload.pageInfo;
     },
 
     taskRemove: (state) => {

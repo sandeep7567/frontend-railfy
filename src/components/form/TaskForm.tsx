@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { cn, formattedDate } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import {
   useCreateTaskMutation,
   useUpdateTaskByIdMutation,
@@ -26,6 +26,7 @@ import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
 import { toast } from "../ui/use-toast";
+import { TaskFormType } from "@/types";
 
 const profileFormSchema = z.object({
   title: z
@@ -40,28 +41,34 @@ const profileFormSchema = z.object({
   maintainceDate: z.date({
     required_error: "A maintenance date is required.",
   }),
-  days: z
-    .number()
-    .min(1, { message: "Days must be at least 1" })
-    .max(90, { message: "Days must not be longer than 90" }),
+  days: z.coerce
+    .number({
+      required_error: "Days is required",
+      invalid_type_error: "Days must be a number",
+    })
+    .positive()
+    .gte(1)
+    .lte(90),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-// This can come from your database or API.
-
 const TaskForm = ({
   mode,
-  task = [],
+  task,
 }: {
-  mode: "new" | "edit" | undefined;
-  task?: any[];
+  mode: "new" | "edit";
+  task?: TaskFormType;
 }) => {
-  const [createTaskApi, { isSuccess: createTaskApiIsSuccess }] =
-    useCreateTaskMutation();
+  const [
+    createTaskApi,
+    { isSuccess: createTaskApiIsSuccess, isError: createTaskApiIsError },
+  ] = useCreateTaskMutation();
 
-  const [updateTaskApi, { isSuccess: updateTaskApiIsSuccess, data }] =
-    useUpdateTaskByIdMutation();
+  const [
+    updateTaskApi,
+    { isSuccess: updateTaskApiIsSuccess, data, isError: updateTaskApiIsError },
+  ] = useUpdateTaskByIdMutation();
 
   const { id } = useParams();
 
@@ -71,7 +78,7 @@ const TaskForm = ({
     title: mode !== "edit" ? "" : "",
     description: mode !== "edit" ? undefined : "",
     maintainceDate: mode !== "edit" ? undefined : undefined,
-    days: mode !== "edit" ? undefined : 0,
+    days: mode !== "edit" ? 0 : 0,
   };
 
   const form = useForm<ProfileFormValues>({
@@ -83,80 +90,59 @@ const TaskForm = ({
   // if task created or updated successfully, then naviagte to "/task";
   useEffect(() => {
     if (createTaskApiIsSuccess || updateTaskApiIsSuccess) {
+      toast({
+        title: createTaskApiIsSuccess
+          ? "Task created successfully"
+          : "Task updated successfully",
+      });
       navigate("/task");
     }
-  }, [createTaskApiIsSuccess, updateTaskApiIsSuccess, data]);
+
+    if (updateTaskApiIsError || createTaskApiIsError) {
+      toast({
+        title: createTaskApiIsError
+          ? "Task create failed"
+          : "Task update faied",
+      });
+    }
+  }, [
+    createTaskApiIsSuccess,
+    updateTaskApiIsSuccess,
+    data,
+    updateTaskApiIsError,
+    createTaskApiIsError,
+  ]);
 
   // sett default value for edit task form in edit mode
   useEffect(() => {
-    if (mode === "edit" && task && task.length > 0) {
-      const editFormData =
-        task?.length > 0 &&
-        task
-          .filter((taskData: any) => {
-            return taskData._id === id;
-          })
-          .map((taskData: any) => {
-            return {
-              title: taskData.title,
-              description: taskData.description,
-              maintainceDate: formattedDate(taskData.maintainceDate),
-              days: taskData.days,
-            };
-          });
-
-      if (editFormData && editFormData.length > 0) {
-        for (let i = 0; i < editFormData.length; i++) {
-          Object.entries(editFormData[i]).forEach(([key, value]) => {
-            if (
-              key === "title" ||
-              key === "description" ||
-              key === "maintainceDate" ||
-              key === "days"
-            ) {
-              form.setValue(key, value as string | number | Date | undefined);
-            }
-          });
-        }
-      } else {
-        navigate("/task");
-      }
+    if (mode === "edit" && task) {
+      form.reset(task);
     }
-  }, [mode, task]);
+  }, [form, task]);
 
   function onSubmit(data: ProfileFormValues) {
-    if (mode === "edit" && task && task.length > 0) {
-      // update task api call
-      const formData = {
-        ...data,
-        _id: id,
-        description: data.description ? data.description : undefined,
-      };
-
-      if (formData && formData._id) {
-        updateTaskApi(formData);
-        toast({ title: "updated successfully" });
-      }
-    } else if (mode === "new" && task.length === 0) {
+    if (mode === "new") {
       // create new Task api call
       const formData = {
         ...data,
         description: data.description ? data.description : undefined,
       };
-
       createTaskApi(formData);
-      toast({ title: "created successfully" });
+    } else if (mode === "edit") {
+      const formData = {
+        ...data,
+        _id: id,
+        description: data.description ? data.description : undefined,
+      };
+      updateTaskApi(formData);
     }
 
-    // reset the form
-    if (mode !== "edit") {
-      form.reset({
-        title: "",
-        description: "",
-        days: 0,
-        maintainceDate: undefined,
-      });
-    }
+    form.reset({
+      title: "",
+      description: "",
+      days: 0,
+      maintainceDate: undefined,
+    });
   }
 
   return (
@@ -195,11 +181,6 @@ const TaskForm = ({
                     type="number"
                     placeholder="Enter a number"
                     {...field}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      field.onChange(isNaN(value) ? undefined : value); // Ensure value is a number or undefined
-                    }}
-                    value={field?.value ? field.value : ""}
                   />
                 </FormControl>
                 <FormDescription>
@@ -241,13 +222,10 @@ const TaskForm = ({
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="end">
                     <Calendar
+                      required
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      // disabled={(date) =>
-                      //   // a cureent date and future date is allowed but an old date is not allowed also allow today date instead
-                      //   date <= new Date(new Date())
-                      // }
                       initialFocus
                     />
                   </PopoverContent>

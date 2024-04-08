@@ -14,16 +14,11 @@ const TaskFormTemplate = ({
         <TaskForm mode={mode} task={task} />
       </TaskController>
     );
-  } else if (mode === "edit") {
+  }
+  if (mode === "edit") {
     return (
       <TaskController title="Edit Task">
         <TaskForm mode={mode} task={task} />
-      </TaskController>
-    );
-  } else {
-    return (
-      <TaskController title="View Task">
-        <h1>View Task Details</h1>
       </TaskController>
     );
   }

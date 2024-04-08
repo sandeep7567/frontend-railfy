@@ -3,7 +3,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 
 const Loader = lazy(() => import("@/components/ui/Loader"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
-const Task = lazy(() => import("@/pages/Task"));
+const TaskPage = lazy(() => import("@/pages/TaskPage"));
 
 function App() {
   const location = useLocation();
@@ -19,13 +19,13 @@ function App() {
       <Suspense fallback={<Loader />}>
         <Routes>
           {/* Task Routes */}
-          <Route path="/task" element={<Task />} />
-          <Route path="/task/:id" element={<Task />} />
-          <Route path="/task/:id/edit" element={<Task />} />
+          <Route path="/task" element={<TaskPage />} />
+          <Route path="/task/:id" element={<TaskPage />} />
+          <Route path="/task/:id/edit" element={<TaskPage />} />
           {/* History Routes */}
-          <Route path="/history" element={<Task />} />
-          <Route path="/history/:id" element={<Task />} />
-          <Route path="*" element={<NotFound />} />{" "}
+          <Route path="/history" element={<TaskPage />} />
+          <Route path="/history/:id" element={<TaskPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </>

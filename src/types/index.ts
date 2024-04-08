@@ -15,10 +15,18 @@ export interface TaskFormType {
   title: string;
   description: string | undefined;
   days: number;
-  dueDate: string | undefined;
-  maintainceDate: string;
+  dueDate: Date;
+  maintainceDate?: Date;
 };
 
+export interface TaskData {
+  _id?: string;
+  title?: string;
+  description?: string | undefined;
+  maintainceDate?: string;
+  dueDate?: string;
+  days?: number;
+};
 export interface DeleteModalProps {
   type: "deleteTask" | "deleteHistory" | "deleteTaskById" | "deleteHistoryById";
   deleteId?: string | null;
