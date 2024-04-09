@@ -1,3 +1,4 @@
+import LayoutHOC from "@/components/layout/LayoutHOC";
 import { Link } from "react-router-dom";
 
 const NotFound = () => {
@@ -41,4 +42,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound;
+export default LayoutHOC(NotFound);

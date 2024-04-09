@@ -3,7 +3,7 @@ import LayoutHOC from "@/components/layout/LayoutHOC";
 import { WrapperLayout } from "@/components/layout/WrapperLayout";
 import { DetailTaskCard } from "@/components/task/DetailTaskCard";
 import { formattedDate, isValidObjectId } from "@/lib/utils";
-import { TaskListing } from "@/pages/TaskListing";
+import { TodoListing } from "@/pages/TodoListing";
 
 import { useGetTaskQuery } from "@/redux/api/apiSlice";
 import { RootState } from "@/redux/store";
@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import NotFound from "./NotFound";
+import { QUERY } from "@/constant/constant";
 
 const TaskPage = () => {
   const { id } = useParams();
@@ -28,12 +29,15 @@ const TaskPage = () => {
   const isValidId = isValidObjectId(id as string);
 
   const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 6,
+    pageIndex: QUERY.PAGE_INDEX,
+    pageSize: QUERY.PAGE_SIZE,
   });
 
-  const [sort, setSort] = useState({ field: "dueDate", order: "asc" });
-
+  const [sort, setSort] = useState({
+    field: QUERY.SORT_FIELD.DUE_DATE,
+    order: QUERY.SORT_ORDER.ASC,
+  });
+  
   const {
     isFetching,
     isLoading,
@@ -56,7 +60,7 @@ const TaskPage = () => {
   // Render the task creation form if the route indicates a new task creation
   if (id && id === "new" && mode === "new") {
     return <TaskFormTemplate mode={"new"} />;
-  };
+  }
 
   // const formmatedTaskData =
   const formmatedTaskListing =
@@ -96,7 +100,7 @@ const TaskPage = () => {
   // Render the task listing if there are tasks and we're not creating or editing a task
   if (taskData.length >= 0 && mode === "new") {
     return (
-      <TaskListing
+      <TodoListing
         isFetching={isFetching}
         isLoading={isLoading}
         task={formmatedTaskListing}

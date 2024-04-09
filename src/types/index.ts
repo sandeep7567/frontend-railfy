@@ -17,6 +17,7 @@ export interface TaskFormType {
   days: number;
   dueDate: Date;
   maintainceDate?: Date;
+  isHistory?: boolean;
 };
 
 export interface TaskData {

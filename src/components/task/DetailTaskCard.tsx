@@ -11,30 +11,51 @@ import {
 } from "@/components/ui/Card";
 import { Link } from "react-router-dom";
 import { TaskData } from "@/types";
+import { DeleteTaskByIdMoadl } from "../ui/modal/DeleteModal";
+import { useState } from "react";
 
 interface TaskDetailTaskCardProps {
   task: TaskData;
+  isHistory?: boolean;
 }
 
 export const DetailTaskCard: React.FC<TaskDetailTaskCardProps> = ({
   task: { _id, description, days, dueDate, maintainceDate, title },
+  isHistory,
 }) => {
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const onDelete = () => {
+    _id && setDeleteId(_id);
+  };
+
   return (
     <Card className="bg-secondary/80 justify-center items-center ">
+      {/* show delete dialog here; */}
+      {deleteId && (
+        <DeleteTaskByIdMoadl
+          title={`Are you sure you want to delete this Task: ${title}`}
+          deleteId={deleteId}
+          type={isHistory ? "deleteHistoryById" : "deleteTaskById"}
+          isOpen={deleteId !== null}
+          onClose={() => setDeleteId(null)}
+        />
+      )}
       <CardHeader className="flex flex-row justify-between space-y-0 items-center">
         <CardTitle className="text-xl lg:text-2xl">{title}</CardTitle>
         <div className="gap-2 flex">
-          <Button
-            size={"icon"}
-            variant={"ghost"}
-            className="hover:bg-muted-foreground/10 hover:text-accent-foreground/90"
-            asChild
-          >
-            <Link to={`/task/${_id}/edit`}>
-              <Edit className="w-3.5 h-3.5" />
-            </Link>
-          </Button>
-          <Button variant={"destructive"} size={"icon"}>
+          {!isHistory && (
+            <Button
+              size={"icon"}
+              variant={"ghost"}
+              className="hover:bg-muted-foreground/10 hover:text-accent-foreground/90"
+              asChild
+            >
+              <Link to={`/task/${_id}/edit`}>
+                <Edit className="w-3.5 h-3.5" />
+              </Link>
+            </Button>
+          )}
+          <Button onClick={onDelete} variant={"destructive"} size={"icon"}>
             <Trash className="w-3.5 h-3.5" />
           </Button>
         </div>

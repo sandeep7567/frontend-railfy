@@ -1,9 +1,11 @@
+import { DeleteModalProps } from "@/types";
 import {
   useDeleteAllTaskMutation,
   useDeleteTaskByIdMutation,
 } from "@/redux/api/taskSlice";
+import { useDeleteAllHistoryByTaskIdMutation, useDeleteHistoryByHistoryIdMutation } from "@/redux/api/historySlice";
 import { Button } from "@/components/ui/Button";
-import { DeleteModalProps } from "@/types";
+import { useParams } from "react-router-dom";
 
 export const DeleteTaskByIdMoadl = ({
   deleteId = null,
@@ -14,6 +16,10 @@ export const DeleteTaskByIdMoadl = ({
 }: DeleteModalProps) => {
   const [deleteTaskByIdApi, {}] = useDeleteTaskByIdMutation();
   const [deleteAllTaskApi] = useDeleteAllTaskMutation();
+  const [deleteAllHistoryByTaskId] = useDeleteAllHistoryByTaskIdMutation();
+  const [deleteHistoryById] = useDeleteHistoryByHistoryIdMutation();
+  
+  const { id: taskId } = useParams();
 
   const handleDeleteById = async () => {
     switch (type) {
@@ -21,13 +27,13 @@ export const DeleteTaskByIdMoadl = ({
         await deleteAllTaskApi();
         break;
       case "deleteHistory":
-        console.log("deleteAllHistoryApi()");
+        deleteId && (await deleteAllHistoryByTaskId(deleteId));
         break;
       case "deleteTaskById":
         deleteId && (await deleteTaskByIdApi(deleteId));
         break;
       case "deleteHistoryById":
-        deleteId && console.log("deleteHistoryById()");
+        deleteId && taskId && deleteHistoryById({ historyId: deleteId, taskId});
         break;
 
       default:

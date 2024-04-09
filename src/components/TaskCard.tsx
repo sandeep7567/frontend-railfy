@@ -23,12 +23,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Separator } from "./ui/Separator";
 
 import { DeleteTaskByIdMoadl } from "./ui/modal/DeleteModal";
+import { HISTORY, TASK } from "@/constant/constant";
 
 export const TaskCard: React.FC<TaskFormType> = ({
   _id,
   title,
   maintainceDate,
   dueDate,
+  isHistory,
 }) => {
   const navigate = useNavigate();
 
@@ -73,24 +75,32 @@ export const TaskCard: React.FC<TaskFormType> = ({
             >
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                  <Link to={`/task/${_id}`}>
+                  <Link to={`${TASK}/${_id}`}>
                     <Eye className="mr-2 h-4 w-4" />
                     <span>View</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate(`/task/${_id}/edit`)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  <span>Update</span>
-                </DropdownMenuItem>
+                {!isHistory && (
+                  <DropdownMenuItem
+                    onClick={() => navigate(`/task/${_id}/edit`)}
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    <span>Update</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={handleDeleteById}>
                   <Trash className="mr-2 h-4 w-4" />
                   <span>Delete</span>
                 </DropdownMenuItem>
                 <Separator />
-                <DropdownMenuItem>
-                  <History className="mr-2 h-4 w-4" />
-                  <span>History</span>
-                </DropdownMenuItem>
+                {!isHistory && (
+                  <DropdownMenuItem asChild>
+                    <Link to={`${TASK}/${_id}${HISTORY}`}>
+                      <History className="mr-2 h-4 w-4" />
+                      <span>History</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -100,12 +110,12 @@ export const TaskCard: React.FC<TaskFormType> = ({
         <div className="flex justify-between gap-4 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center">
             <CalendarDays className="mr-1 h-3 w-3 text-sky-400" />
-            Maintaince: {maintainceDate}
+            Maintaince: {maintainceDate?.toString()}
           </div>
           {dueDate && (
             <div className="flex items-center">
               <CalendarDays className="mr-1 h-3 w-3 text-sky-400" />
-              Due: {dueDate}
+              Due: {dueDate.toString()}
             </div>
           )}
         </div>

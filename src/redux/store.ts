@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { apiSlice } from './api/apiSlice';
 import taskSlice from './slice/taskSlice';
+import historySlice from './slice/historySlice';
 
 export const store = configureStore({
   reducer: {
     // Slice
     [apiSlice.reducerPath]: apiSlice.reducer,
     task: taskSlice,
+    history: historySlice,
   },
   devTools: false,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware),

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { TaskCard } from "@/components/TaskCard";
 import { Button } from "@/components/ui/Button";
@@ -7,8 +7,9 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import Loader from "@/components/ui/Loader";
 import { TaskFormType } from "@/types";
 import { ChevronLeft, ChevronRight, PlusCircleIcon, X } from "lucide-react";
-import moment from "moment";
 import { DeleteTaskByIdMoadl } from "@/components/ui/modal/DeleteModal";
+import { DetailTaskCard } from "@/components/task/DetailTaskCard";
+import { cn } from "@/lib/utils";
 
 interface PageInfoProps {
   totalDoc: number;
@@ -16,9 +17,10 @@ interface PageInfoProps {
   currentPage: number;
 }
 
-interface TaskListingProps {
+interface TodoListingProps {
   task: any[];
   pageInfo: PageInfoProps;
+  isHistory?: boolean;
   isFetching: boolean;
   isLoading: boolean;
   pagination: { pageIndex: number; pageSize: number };
@@ -27,14 +29,15 @@ interface TaskListingProps {
   setSort: (sort: { field: string; order: "asc" | "dsc" }) => void;
 }
 
-export const TaskListing = ({
+export const TodoListing = ({
   task = [],
   pageInfo,
+  isHistory = false,
   isFetching = false,
   isLoading = false,
   setPagination,
   pagination,
-}: TaskListingProps) => {
+}: TodoListingProps) => {
   const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -43,6 +46,8 @@ export const TaskListing = ({
   const currentPage = pageInfo?.currentPage;
   const totalDoc = pageInfo.totalDoc;
   const totalPages = pageInfo.totalPages;
+
+  const { id } = useParams();
 
   const handleDeleteDB = async () => {
     setIsOpen(true);
@@ -73,8 +78,9 @@ export const TaskListing = ({
       {isOpen && (
         <DeleteTaskByIdMoadl
           title={"Are you sure you want to delete All Task Listing?"}
-          type="deleteTask"
+          type={isHistory ? "deleteHistory" : "deleteTask"}
           isOpen={isOpen}
+          deleteId={isHistory ? id : null}
           onClose={() => setIsOpen(false)}
         />
       )}
@@ -97,11 +103,24 @@ export const TaskListing = ({
           </Card>
           {/* TODO Task Listing */}
           <div className="flex flex-col justify-between min-h-[35rem] h-full">
-            <div className="w-full md:w-3/4 lg:w-10/12 xl:w-full pr-2 md:p-0 ml-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-2 gap-4 my-10">
+            <div
+              className={cn(
+                "w-full md:w-3/4 lg:w-10/12 xl:w-full pr-2 md:p-0 ml-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-2 gap-4 my-10",
+                isHistory && "xl:grid-cols-1 2xl:grid-cols-1"
+              )}
+            >
               {!!task.length &&
-                task.map((task: TaskFormType) => (
-                  <TaskCard key={task._id} {...task} />
-                ))}
+                task.map((task: TaskFormType) =>
+                  isHistory ? (
+                    <DetailTaskCard
+                      isHistory={isHistory}
+                      task={task}
+                      key={task._id}
+                    />
+                  ) : (
+                    <TaskCard isHistory={isHistory} key={task._id} {...task} />
+                  )
+                )}
             </div>
             <Card className="w-full md:w-full mx-auto border-none gap-32 flex flex-row shadow-none bg-none justify-end items-center mb-10 md:mb-2">
               {/* total no of docs show */}

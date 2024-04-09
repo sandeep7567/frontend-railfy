@@ -1,14 +1,14 @@
-import { Task } from "@/constant/reduxApi";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { taskAdd } from "../slice/taskSlice";
+import { TASK } from "@/constant/constant";
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_BASE_URI }),
-  tagTypes: ["Task"],
+  tagTypes: ["Task", "History"],
   endpoints: (builder) => ({
       getTask: builder.query({
         query: (params) => ({
-          url: `/${Task}`,
+          url: `${TASK}`,
           method: "GET",
           credentials: "include" as const,
           params,
