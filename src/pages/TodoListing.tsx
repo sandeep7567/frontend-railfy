@@ -110,15 +110,15 @@ export const TodoListing = ({
               )}
             >
               {!!task.length &&
-                task.map((task: TaskFormType) =>
+                task.map((taskInfo: any) =>
                   isHistory ? (
                     <DetailTaskCard
                       isHistory={isHistory}
-                      task={task}
-                      key={task._id}
+                      {...taskInfo}
+                      key={taskInfo._id}
                     />
                   ) : (
-                    <TaskCard isHistory={isHistory} key={task._id} {...task} />
+                    <TaskCard isHistory={isHistory} key={taskInfo._id} {...taskInfo} />
                   )
                 )}
             </div>

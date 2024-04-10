@@ -9,19 +9,33 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import { Link } from "react-router-dom";
-import { TaskData } from "@/types";
-import { DeleteTaskByIdMoadl } from "../ui/modal/DeleteModal";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Badge } from "../ui/badge";
+import { DeleteTaskByIdMoadl } from "../ui/modal/DeleteModal";
 
 interface TaskDetailTaskCardProps {
-  task: TaskData;
+  _id: string;
+  title?: string;
+  description?: string;
+  dueDate?: string;
+  maintainceDate?: string;
+  days?: number;
+  version?: number;
+  status?: string;
   isHistory?: boolean;
 }
 
 export const DetailTaskCard: React.FC<TaskDetailTaskCardProps> = ({
-  task: { _id, description, days, dueDate, maintainceDate, title },
-  isHistory,
+  _id,
+  description,
+  days,
+  dueDate,
+  maintainceDate,
+  title,
+  version,
+  status,
+  isHistory = false,
 }) => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const onDelete = () => {
@@ -54,6 +68,11 @@ export const DetailTaskCard: React.FC<TaskDetailTaskCardProps> = ({
                 <Edit className="w-3.5 h-3.5" />
               </Link>
             </Button>
+          )}
+          {isHistory && (
+            <Badge variant={"default"}>
+              {status}: {version}
+            </Badge>
           )}
           <Button onClick={onDelete} variant={"destructive"} size={"icon"}>
             <Trash className="w-3.5 h-3.5" />

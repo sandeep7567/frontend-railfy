@@ -18,7 +18,15 @@ export interface TaskFormType {
   dueDate: Date;
   maintainceDate?: Date;
   isHistory?: boolean;
+  status?: Status;
+  version?: number;
 };
+
+enum Status {
+  "created",
+  "updated",
+  "deleted",
+}
 
 export interface TaskData {
   _id?: string;
@@ -27,6 +35,8 @@ export interface TaskData {
   maintainceDate?: string;
   dueDate?: string;
   days?: number;
+  status?: Status;
+  version?: number;
 };
 export interface DeleteModalProps {
   type: "deleteTask" | "deleteHistory" | "deleteTaskById" | "deleteHistoryById";

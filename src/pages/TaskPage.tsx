@@ -92,7 +92,7 @@ const TaskPage = () => {
   if (mode === "view") {
     return (
       <WrapperLayout>
-        <DetailTaskCard task={findTaskById} />
+        <DetailTaskCard {...findTaskById} />
       </WrapperLayout>
     );
   }
