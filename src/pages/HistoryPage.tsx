@@ -1,8 +1,8 @@
 import LayoutHOC from "@/components/layout/LayoutHOC";
 import { TodoListing } from "./TodoListing";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { isValidObjectId } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { QUERY } from "@/constant/constant";
 import { useGetAllHistoryByTaskIdQuery } from "@/redux/api/historySlice";
@@ -13,6 +13,7 @@ import { RootState } from "@/redux/store";
 const HistoryPage = () => {
   const { id } = useParams<{ id: string }>();
   const isValidId = isValidObjectId(id as string);
+  const navigate = useNavigate();
 
   const [pagination, setPagination] = useState({
     pageIndex: QUERY.PAGE_INDEX,
@@ -45,12 +46,18 @@ const HistoryPage = () => {
     { refetchOnMountOrArgChange: true }
   );
 
-  const isHistory = history.length > 0 && history[0]?.taskId === id;
+  console.log(isGetHistoryError);
+  useEffect(() => {
+    if (isGetHistoryError) {
+      navigate("/task");
+    }
+  }, []);
+  
 
   return (
     <>
       <TodoListing
-        isHistory={isHistory}
+        isHistory={true}
         isFetching={isFetching}
         isLoading={isLoading}
         pageInfo={pageInfo}

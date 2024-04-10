@@ -5,8 +5,7 @@ import { TaskCard } from "@/components/TaskCard";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import Loader from "@/components/ui/Loader";
-import { TaskFormType } from "@/types";
-import { ChevronLeft, ChevronRight, PlusCircleIcon, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MoveLeft, PlusCircleIcon, X } from "lucide-react";
 import { DeleteTaskByIdMoadl } from "@/components/ui/modal/DeleteModal";
 import { DetailTaskCard } from "@/components/task/DetailTaskCard";
 import { cn } from "@/lib/utils";
@@ -118,7 +117,11 @@ export const TodoListing = ({
                       key={taskInfo._id}
                     />
                   ) : (
-                    <TaskCard isHistory={isHistory} key={taskInfo._id} {...taskInfo} />
+                    <TaskCard
+                      isHistory={isHistory}
+                      key={taskInfo._id}
+                      {...taskInfo}
+                    />
                   )
                 )}
             </div>
@@ -159,8 +162,8 @@ export const TodoListing = ({
         </div>
       )}
 
-      {/* if data is empty */}
-      {task && task.length === 0 && (
+      {/* if data is empty and isHistory */}
+      {task && task.length === 0 && !isHistory && (
         <Card className="w-full mx-auto h-[43rem] bg-[#f5f5f5] flex justify-center items-center">
           <CardHeader className="flex flex-col gap-5">
             <CardTitle className="text-4xl text-purple-700">
@@ -173,6 +176,22 @@ export const TodoListing = ({
               className="bg-blue-500 w-fit mx-auto hover:bg-blue-500/90 text-white"
             >
               <PlusCircleIcon className="mr-2 h-5 w-5" /> Create your first Task
+            </Button>
+          </CardHeader>
+        </Card>
+      )}
+      {/*  if data is empty but isHistory */}
+      {task && task.length === 0 && isHistory && (
+        <Card className="w-full mx-auto h-[43rem] bg-[#f5f5f5] flex justify-center items-center">
+          <CardHeader className="flex flex-col gap-5">
+            <CardTitle className="text-4xl text-purple-700">
+              No History Found
+            </CardTitle>
+            <Button
+              onClick={() => navigate("/task")}
+              className="w-fit mx-auto"
+            >
+              <MoveLeft className="mr-2 h-5 w-5" /> Go Back Task
             </Button>
           </CardHeader>
         </Card>
