@@ -29,12 +29,6 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       icon: ListTodo,
       path: location.pathname.includes("/task"),
     },
-    {
-      name: "History",
-      href: "/history",
-      icon: History,
-      path: location.pathname.includes("/history"),
-    },
   ];
 
   return (

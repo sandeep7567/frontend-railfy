@@ -101,6 +101,7 @@ const TaskPage = () => {
   if (taskData.length >= 0 && mode === "new") {
     return (
       <TodoListing
+        title="Task"
         isFetching={isFetching}
         isLoading={isLoading}
         task={formmatedTaskListing}

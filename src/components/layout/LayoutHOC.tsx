@@ -18,7 +18,7 @@ const LayoutHOC = (ChildComponent: React.ComponentType) => {
           />
 
           <div className="grow">
-            {/* AppBar */}
+            {/* Navbar */}
             <AppNavbar mobileView={mobileNavView} />
 
             {/* Main Dashboard Area */}

@@ -33,7 +33,7 @@ const AppNavbar: React.FC<AppSidebarProps> = ({ mobileView }) => {
 
             <div className="hidden lg:flex lg:items-center lg:space-x-10">
               <Link
-                to={"/"}
+                to={"/task"}
                 title=""
                 className="flex items-center justify-center w-8 h-8 text-white bg-slate-800 rounded-full"
               >

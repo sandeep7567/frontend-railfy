@@ -46,17 +46,17 @@ const HistoryPage = () => {
     { refetchOnMountOrArgChange: true }
   );
 
-  console.log(isGetHistoryError);
   useEffect(() => {
     if (isGetHistoryError) {
       navigate("/task");
-    }
-  }, []);
+    };
+  }, [isGetHistoryError]);
   
 
   return (
     <>
       <TodoListing
+        title={"History"}
         isHistory={true}
         isFetching={isFetching}
         isLoading={isLoading}

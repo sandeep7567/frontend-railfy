@@ -1,7 +1,7 @@
+import Loader from "@/components/ui/Loader"; // Assuming Loader is a default export
+import routes, { RouteConfig } from "@/routes/RouteConfig";
 import { Suspense, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import routes, { RouteConfig } from "@/routes/RouteConfig";
-import Loader from "@/components/ui/Loader"; // Assuming Loader is a default export
 
 function App() {
   const location = useLocation();

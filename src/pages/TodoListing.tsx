@@ -5,10 +5,17 @@ import { TaskCard } from "@/components/TaskCard";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import Loader from "@/components/ui/Loader";
-import { ChevronLeft, ChevronRight, MoveLeft, PlusCircleIcon, X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MoveLeft,
+  PlusCircleIcon,
+  X,
+} from "lucide-react";
 import { DeleteTaskByIdMoadl } from "@/components/ui/modal/DeleteModal";
 import { DetailTaskCard } from "@/components/task/DetailTaskCard";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface PageInfoProps {
   totalDoc: number;
@@ -17,6 +24,7 @@ interface PageInfoProps {
 }
 
 interface TodoListingProps {
+  title: string;
   task: any[];
   pageInfo: PageInfoProps;
   isHistory?: boolean;
@@ -29,6 +37,7 @@ interface TodoListingProps {
 }
 
 export const TodoListing = ({
+  title = "Task",
   task = [],
   pageInfo,
   isHistory = false,
@@ -69,7 +78,7 @@ export const TodoListing = ({
 
   if (isLoading) {
     return <Loader />;
-  };
+  }
 
   return (
     <div className="w-10/12 mx-auto ml-16 lg:ml-24 xl:ml-24 2xl:ml-56 mt-8 md:mt-16">
@@ -85,20 +94,30 @@ export const TodoListing = ({
       )}
       {/* if data is not empty */}
       {task && task.length > 0 && (
-        <div className="flex flex-col-reverse md:flex-col">
-          <Card className="w-full md:w-fit border-none flex flex-col sm:flex-row gap-4 shadow-none bg-none ml-auto justify-end items-center mb-2">
-            <Button
-              variant={"ternary"}
-              className="bg-blue-500 w-full md:w-fit mx-auto hover:bg-blue-500/90 text-white"
-              asChild
-            >
-              <Link to={"/task/new"}>
-                <PlusCircleIcon className="mr-2 h-5 w-5" /> Create Task
-              </Link>
-            </Button>
-            <Button onClick={handleDeleteDB} className="w-full md:w-fit">
-              <X className="mr-2 h-5 w-5" /> Clear All
-            </Button>
+        <div className="flex flex-col mt-14 md:10 md:flex-col">
+          <Card className="w-full border-none justify-between flex flex-col sm:flex-row gap-4 shadow-none bg-none items-center">
+            <div className="grow w-full md:ml-48 lg:ml-40 xl:ml-0">
+              <Badge
+                variant={"default"}
+                className="text-xl md:w-fit flex justify-center items-center px-6 py-1"
+              >
+                {title}
+              </Badge>
+            </div>
+            <div className="flex gap-4 w-full sm:w-fit">
+              <Button
+                variant={"ternary"}
+                className="bg-blue-500 w-full md:w-fit mx-auto hover:bg-blue-500/90 text-white"
+                asChild
+              >
+                <Link to={"/task/new"}>
+                  <PlusCircleIcon className="mr-2 h-5 w-5" /> Create Task
+                </Link>
+              </Button>
+              <Button onClick={handleDeleteDB} className="w-full md:w-fit">
+                <X className="mr-2 h-5 w-5" /> Clear All
+              </Button>
+            </div>
           </Card>
           {/* TODO Task Listing */}
           <div className="flex flex-col justify-between min-h-[35rem] h-full">
@@ -187,10 +206,7 @@ export const TodoListing = ({
             <CardTitle className="text-4xl text-purple-700">
               No History Found
             </CardTitle>
-            <Button
-              onClick={() => navigate("/task")}
-              className="w-fit mx-auto"
-            >
+            <Button onClick={() => navigate("/task")} className="w-fit mx-auto">
               <MoveLeft className="mr-2 h-5 w-5" /> Go Back Task
             </Button>
           </CardHeader>
